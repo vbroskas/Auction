@@ -1,0 +1,6 @@
+<h1> Edit <%= @item.data.title %> </h1>
+
+<%# remember, @item is a changeset, not an Auction.Item struct. The attributes of the underlying record of the
+changeset can be accessed through the data attribute of the changeset. %>
+
+<%= render("form.html", item: @item, action: Routes.item_path(@conn, :update, @item.data)) %>
