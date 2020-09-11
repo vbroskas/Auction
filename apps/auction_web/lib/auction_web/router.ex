@@ -23,14 +23,10 @@ defmodule AuctionWeb.Router do
 
   scope "/", AuctionWeb do
     pipe_through :browser
-    get "/items", ItemController, :index
-    get "/items/new", ItemController, :new
-    post "/items", ItemController, :create
-    get "/items/:id", ItemController, :show
-    get "/items/:id/edit", ItemController, :edit
-    # patch "/items/:id", ItemController, :update
-    put "/items/:id", ItemController, :update
-    # delete "/items/:id", ItemController, :delete
+
+    resources "/items", ItemController, only: [:index, :new, :create, :show, :edit, :update] do
+      resources "/bids", BidController, only: [:create]
+    end
 
     resources "/users", UserController, only: [:show, :new, :create]
 

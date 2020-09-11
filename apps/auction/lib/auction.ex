@@ -3,7 +3,7 @@ defmodule Auction do
   Context for `Auction`.
   Public interface
   """
-  alias Auction.{Repo, Item, User, Password}
+  alias Auction.{Repo, Item, User, Password, Bid}
   @repo Auction.Repo
 
   def list_items do
@@ -12,6 +12,12 @@ defmodule Auction do
 
   def get_item(id) do
     @repo.get!(Item, id)
+  end
+
+  def get_item_with_bids(id) do
+    id
+    |> get_item()
+    |> @repo.preload(bids: [:user])
   end
 
   @spec get_item_by(map()) :: any
@@ -74,5 +80,20 @@ defmodule Auction do
     %User{}
     |> User.changeset_with_password(params)
     |> @repo.insert
+  end
+
+  # -----------------------------------------Bid calls---------------------------
+  def insert_bid(params) do
+    %Bid{}
+    |> Bid.changeset(params)
+    |> @repo.insert()
+  end
+
+  @doc """
+  create blank bid that goes through a blank changeset
+  this will return everything the form needs to render & accept a bid
+  """
+  def new_bid() do
+    Bid.changeset(%Bid{})
   end
 end
