@@ -1,33 +1,35 @@
-
 <h1><%= @item.title %></h1>
 
 <ul>
-<li><strong>Description:</strong> <%= @item.description %></li>
-<li><strong>Auction ends at:</strong> <%= @item.ends_at %></li>
+	<li><strong>Description:</strong> <%= @item.description %></li>
+	<li><strong>Auction ends at:</strong> <%= @item.ends_at %></li>
 </ul>
 
 
-<%= if @current_user  do%>
-<h2>Place your bid!</h2>
-
-
-
-<%= form_for @bid, Routes.item_bid_path(@conn, :create, @item), fn f -> %>
-<%= if @bid.action do %>
-	<div class="alert alert-danger">
-	Sorry, there are errors in your submission. Please correct them.
+<div style="display: flex; flex-direction: row;">
+	<div style="flex: 1;">
+		<h2>Current Bids</h2>
+		<div id="bids">
+		<%= render_many @item.bids, AuctionWeb.BidView, "bid.html" %>
 	</div>
-<% end %>
-
-<div class="form-group">
-<%= label f, :amount, "Bid Amount", class: "control-label" %>
-<%= error_tag f, :amount %>
-<%= number_input f, :amount, class: "form-control" %>
+	</div>
+	<div style="flex: 1;">
+		<%= if @current_user do %>
+		<h2>Place your bid!</h2>
+		<%= form_for @bid, Routes.item_bid_path(@conn, :create, @item), fn f -> %>
+		<%= if @bid.action do %>
+		<div class="alert alert-danger">
+			Unfortunately, there are errors in your
+			submission. Please correct them below.
+		</div>
+		<% end %>
+		<div class="form-group">
+			<%= label f, :amount, "Bid amount", class: "control-label" %>
+			<%= error_tag f, :amount %>
+			<%= number_input f, :amount, class: "form-control" %>
+		</div>
+		<%= submit "Submit", class: "btn btn-primary"%>
+		<% end %>
+		<% end %>
+	</div>
 </div>
-
-
-<div>
-<%= submit "Submit", class: "btn btn-primary" %>
-</div>
-<% end %>
-<% end %>

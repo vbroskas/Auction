@@ -7,9 +7,10 @@ defmodule AuctionWeb.ItemController do
   end
 
   def show(conn, %{"id" => id}) do
-    item = Auction.get_item(id)
-    bid = Auction.new_bid()
-    render(conn, "show.html", item: item, bid: bid)
+    item = Auction.get_item_with_bids(id)
+
+    empty_bid_struct = Auction.new_bid()
+    render(conn, "show.html", item: item, bid: empty_bid_struct)
   end
 
   @doc """
@@ -24,9 +25,6 @@ defmodule AuctionWeb.ItemController do
   handle POST request from form to create new item
   """
   def create(conn, %{"item" => item_params}) do
-    IO.puts("++++++++++++++++++++++++++++++++")
-    IO.inspect(item_params)
-
     case Auction.insert_item(item_params) do
       {:ok, item} -> redirect(conn, to: Routes.item_path(conn, :show, item))
       {:error, changeset} -> render(conn, "new.html", item: changeset)

@@ -15,9 +15,11 @@ defmodule AuctionWeb.BidController do
 
     case Auction.insert_bid(%{amount: amount, user_id: user_id, item_id: item_id}) do
       {:ok, bid} ->
-        IO.puts("IN BID CREATE!!")
-        IO.inspect(bid)
-        IO.inspect(item_id)
+        # broadcast out new bid
+        AuctionWeb.Endpoint.broadcast("item:#{item_id}", "new_bid", %{
+          body: "New bid for item:#{item_id}"
+        })
+
         redirect(conn, to: Routes.item_path(conn, :show, bid.item_id))
 
       {:error, bid} ->
