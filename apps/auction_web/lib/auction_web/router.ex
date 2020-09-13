@@ -38,9 +38,17 @@ defmodule AuctionWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", AuctionWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AuctionWeb.Api do
+    pipe_through :api
+
+    """
+    already have an AuctionWeb.ItemController that handles HTML requests, but
+    now you’ll introduce a AuctionWeb.Api.ItemController to handle JSON requests.
+    The namespacing keeps them separate and communicates their purpose.
+    """
+
+    resources "/items", ItemController, only: [:index, :show]
+  end
 
   # Enables LiveDashboard only for development
   #

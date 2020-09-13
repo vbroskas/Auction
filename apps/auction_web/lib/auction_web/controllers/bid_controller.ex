@@ -15,10 +15,14 @@ defmodule AuctionWeb.BidController do
 
     case Auction.insert_bid(%{amount: amount, user_id: user_id, item_id: item_id}) do
       {:ok, bid} ->
+        html =
+          Phoenix.View.render_to_string(AuctionWeb.BidView, "bid.html",
+            bid: bid,
+            username: conn.assigns.current_user.username
+          )
+
         # broadcast out new bid
-        AuctionWeb.Endpoint.broadcast("item:#{item_id}", "new_bid", %{
-          body: "New bid for item:#{item_id}"
-        })
+        AuctionWeb.Endpoint.broadcast("item:#{item_id}", "new_bid", %{body: html})
 
         redirect(conn, to: Routes.item_path(conn, :show, bid.item_id))
 
@@ -26,9 +30,6 @@ defmodule AuctionWeb.BidController do
         item = Auction.get_item(item_id)
         render(conn, AuctionWeb.ItemView, "show.html", item: item, bid: bid)
     end
-  end
-
-  def new(conn, _params) do
   end
 
   defp require_logged_in_user(%{assigns: %{current_user: nil}} = conn, _opts) do

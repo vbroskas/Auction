@@ -16,10 +16,12 @@ defmodule Auction do
   end
 
   def get_item_with_bids(id) do
+    query = from(b in Bid, order_by: [desc: b.inserted_at])
+
     id
     |> get_item()
     # Preloads the item’s bids and the users for those bids
-    |> @repo.preload(bids: [:user])
+    |> @repo.preload(bids: {query, [:user]})
   end
 
   @spec get_item_by(map()) :: any
