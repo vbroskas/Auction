@@ -12,4 +12,8 @@ defmodule AuctionWeb.GlobalHelpers do
     datetime
     |> DateTime.from_naive("Etc/UTC")
   end
+
+  def check_ends_at(ends_at) do
+    ends_at > DateTime.now("Etc/UTC")
+  end
 end

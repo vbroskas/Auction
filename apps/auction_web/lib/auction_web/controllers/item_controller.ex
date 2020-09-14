@@ -1,6 +1,8 @@
 defmodule AuctionWeb.ItemController do
   use AuctionWeb, :controller
 
+  plug :require_logged_in_user when action in [:new]
+
   def index(conn, _params) do
     items = Auction.list_items()
     render(conn, "index.html", items: items)

@@ -25,11 +25,6 @@ defmodule Auction.User do
   end
 
   def changeset_with_password(user, params \\ %{}) do
-    IO.puts("WITH PASS")
-    IO.inspect(user)
-    IO.inspect(params)
-    IO.puts("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-
     user
     |> cast(params, [:password])
     |> validate_required(:password)

@@ -26,15 +26,17 @@
 			</a>
 		</section>
 	</header>
-	<div class="container" style="border-bottom: 1px solid #777777; margin-bottom: 2rem; padding-bottom: 1rem;">
-		<%= link "Items", to: Routes.item_path(@conn, :index) %>
+	<div class="container" style="border-bottom: 1px solid #777777; margin-bottom: 2rem; padding-bottom: 1rem; display: flex; flex-direction: row;">
 
-		<%= if @current_user do %>
-		Logged in as <%= link @current_user.username, to: Routes.user_path(@conn, :show, @current_user) %>
+		<div style="flex: 1;"><%= if @current_user do %>
+		Logged in as <%= link @current_user.username, to: Routes.user_path(@conn, :show, @current_user) %></div>
 
-		<%= link "Log out", to: Routes.session_path(@conn, :delete), method: :delete %>
+		<div style="flex: 1;"><%= link "Create Auction", to: Routes.item_path(@conn, :new) %></div>
+		<div style="flex: 1;"><%= link "All Auctions", to: Routes.item_path(@conn, :index) %></div>
+		<div style="flex: 1;"><%= link "Log out", to: Routes.session_path(@conn, :delete), method: :delete %></div>
+
 		<% else %>
-		<%= link "login", to: Routes.session_path(@conn, :new) %>
+			<div style="flex: 1;"><%= link "login", to: Routes.session_path(@conn, :new) %></div>
 		<% end %>
 	</div>
 

@@ -13,22 +13,37 @@ defmodule AuctionWeb.BidController do
     # get user_id
     user_id = conn.assigns.current_user.id
 
-    case Auction.insert_bid(%{amount: amount, user_id: user_id, item_id: item_id}) do
-      {:ok, bid} ->
-        html =
-          Phoenix.View.render_to_string(AuctionWeb.BidView, "bid.html",
-            bid: bid,
-            username: conn.assigns.current_user.username
-          )
+    # check ends_at
+    item = Auction.get_item(item_id)
 
-        # broadcast out new bid
-        AuctionWeb.Endpoint.broadcast("item:#{item_id}", "new_bid", %{body: html})
+    # DateTime.compare check if first date is greater(:gt), less than (:lt) or equal (:eq) to second date
+    case DateTime.compare(item.ends_at, DateTime.utc_now()) do
+      result when result in [:lt, :eq] ->
+        conn
+        |> put_flash(:error, "Bidding on that item has expired!")
+        |> redirect(to: Routes.item_path(conn, :show, item_id))
 
-        redirect(conn, to: Routes.item_path(conn, :show, bid.item_id))
+      _ ->
+        # item still going
+        case Auction.insert_bid(%{amount: amount, user_id: user_id, item_id: item_id}) do
+          {:ok, bid} ->
+            html =
+              Phoenix.View.render_to_string(AuctionWeb.BidView, "bid.html",
+                bid: bid,
+                username: conn.assigns.current_user.username
+              )
 
-      {:error, bid} ->
-        item = Auction.get_item(item_id)
-        render(conn, AuctionWeb.ItemView, "show.html", item: item, bid: bid)
+            # broadcast out new bid
+            AuctionWeb.Endpoint.broadcast("item:#{item_id}", "new_bid", %{body: html})
+
+            redirect(conn, to: Routes.item_path(conn, :show, bid.item_id))
+
+          {:error, bid} ->
+            IO.puts("BACK IN CONT----------")
+            IO.inspect(bid)
+            item = Auction.get_item_with_bids(item_id)
+            render(conn, AuctionWeb.ItemView, "show.html", item: item, bid: bid)
+        end
     end
   end
 

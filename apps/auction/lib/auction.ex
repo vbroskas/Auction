@@ -101,7 +101,7 @@ defmodule Auction do
   # -----------------------------------------Bid calls---------------------------
   def insert_bid(params) do
     %Bid{}
-    |> Bid.changeset(params)
+    |> Bid.changesetv2(params)
     |> @repo.insert()
   end
 

@@ -11,7 +11,7 @@
 		<h2>Current Bids</h2>
 		<div id="bids">
 		<%= render_many @item.bids, AuctionWeb.BidView, "bid.html" %>
-	</div>
+		</div>
 	</div>
 	<div style="flex: 1;">
 		<%= if @current_user do %>
