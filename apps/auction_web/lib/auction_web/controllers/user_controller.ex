@@ -11,7 +11,8 @@ defmodule AuctionWeb.UserController do
   def show(conn, %{"id" => id}) do
     user = Auction.get_user(id)
     bids = Auction.get_bids_for_user(user)
-    render(conn, "show.html", user: user, bids: bids)
+    items = Auction.get_items_by_user(id)
+    render(conn, "show.html", user: user, bids: bids, items: items)
   end
 
   @doc """
@@ -30,10 +31,11 @@ defmodule AuctionWeb.UserController do
   def create(conn, %{"user" => user_params}) do
     case Auction.insert_user(user_params) do
       {:ok, user} ->
-        # user successfully created
-        IO.puts("------------------------------------")
-        IO.inspect(user)
-        redirect(conn, to: Routes.user_path(conn, :show, user))
+        # log new user in
+        conn
+        |> put_session(:user_id, user.id)
+        |> put_flash(:info, "Successfully logged in!")
+        |> redirect(to: Routes.user_path(conn, :show, user))
 
       {:error, user} ->
         # send back changeset with errors

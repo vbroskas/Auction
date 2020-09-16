@@ -26,6 +26,7 @@ defmodule Auction.Bid do
     bid
     |> cast(params, [:amount, :user_id, :item_id])
     |> validate_required([:amount, :user_id, :item_id])
+    |> validate_number(:amount, greater_than: 0)
     |> check_current_bid()
     |> assoc_constraint(:item)
     |> assoc_constraint(:user)
@@ -43,7 +44,7 @@ defmodule Auction.Bid do
 
     result = @repo.one(query)
 
-    if amount > result do
+    if amount > result || result == nil do
       IO.puts("GOOOOOOD-------------")
       changeset
     else

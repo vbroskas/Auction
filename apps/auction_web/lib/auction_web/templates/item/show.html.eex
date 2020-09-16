@@ -3,10 +3,20 @@
 <ul>
 	<li><strong>Description:</strong> <%= @item.description %></li>
 	<li><strong>Auction ends at:</strong> <%= @item.ends_at %></li>
+	<li><strong>Creator</strong> <%= @owner %></li>
 </ul>
 
 
+
+
 <div style="display: flex; flex-direction: row;">
+<%= if check_ends_at(@item.ends_at) do %>
+<div style="flex: 1;">
+		<h2>Bidding has expired</h2>
+
+	</div>
+
+<% else %>
 	<div style="flex: 1;">
 		<h2>Current Bids</h2>
 		<div id="bids">
@@ -32,4 +42,7 @@
 		<% end %>
 		<% end %>
 	</div>
+
+<% end %>
+
 </div>

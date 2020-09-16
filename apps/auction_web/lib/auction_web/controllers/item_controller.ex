@@ -4,15 +4,20 @@ defmodule AuctionWeb.ItemController do
   plug :require_logged_in_user when action in [:new]
 
   def index(conn, _params) do
-    items = Auction.list_items()
+    items = Auction.list_active_items()
     render(conn, "index.html", items: items)
+  end
+
+  def closed(conn, _params) do
+    items = Auction.list_expired_items()
+    render(conn, "closed.html", items: items)
   end
 
   def show(conn, %{"id" => id}) do
     item = Auction.get_item_with_bids(id)
-
+    owner = Auction.get_user(item.user_id)
     empty_bid_struct = Auction.new_bid()
-    render(conn, "show.html", item: item, bid: empty_bid_struct)
+    render(conn, "show.html", item: item, bid: empty_bid_struct, owner: owner.username)
   end
 
   @doc """
@@ -27,7 +32,9 @@ defmodule AuctionWeb.ItemController do
   handle POST request from form to create new item
   """
   def create(conn, %{"item" => item_params}) do
-    case Auction.insert_item(item_params) do
+    current_user = Map.get(conn.assigns, :current_user)
+
+    case Auction.insert_item(item_params, current_user) do
       {:ok, item} -> redirect(conn, to: Routes.item_path(conn, :show, item))
       {:error, changeset} -> render(conn, "new.html", item: changeset)
     end

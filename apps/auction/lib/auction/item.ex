@@ -7,6 +7,7 @@ defmodule Auction.Item do
     field(:description, :string)
     field(:ends_at, :utc_datetime)
     has_many(:bids, Auction.Bid)
+    belongs_to(:user, Auction.User)
     timestamps()
   end
 
@@ -23,8 +24,8 @@ defmodule Auction.Item do
     # 3-A list of fields that you’ll allow to be changed
     # 4-An optional list of options to pass to Ecto.Changeset
     item
-    |> cast(params, [:title, :description, :ends_at])
-    |> validate_required(:title)
+    |> cast(params, [:title, :description, :ends_at, :user_id])
+    |> validate_required([:title, :description, :user_id])
     |> validate_length(:title, min: 3)
     |> validate_length(:description, max: 200)
     # https://hexdocs.pm/ecto/Ecto.Changeset.html#validate_change/3

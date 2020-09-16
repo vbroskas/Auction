@@ -24,6 +24,8 @@ defmodule AuctionWeb.Router do
   scope "/", AuctionWeb do
     pipe_through :browser
 
+    get "/closed", ItemController, :closed, as: :closed
+
     resources "/items", ItemController, only: [:index, :new, :create, :show, :edit, :update] do
       resources "/bids", BidController, only: [:create]
     end

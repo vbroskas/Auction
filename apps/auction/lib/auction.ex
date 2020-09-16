@@ -11,6 +11,28 @@ defmodule Auction do
     @repo.all(Item)
   end
 
+  def list_active_items do
+    query =
+      from(i in Item,
+        where: i.ends_at > ^DateTime.utc_now(),
+        order_by: [desc: :inserted_at],
+        preload: [bids: [:item, :user]]
+      )
+
+    @repo.all(query)
+  end
+
+  def list_expired_items do
+    query =
+      from(i in Item,
+        where: i.ends_at < ^DateTime.utc_now(),
+        order_by: [desc: :inserted_at],
+        preload: [bids: [:item, :user]]
+      )
+
+    @repo.all(query)
+  end
+
   def get_item(id) do
     @repo.get!(Item, id)
   end
@@ -29,12 +51,24 @@ defmodule Auction do
     @repo.get_by(Item, attrs)
   end
 
+  def get_items_by_user(id) do
+    query =
+      from(i in Item,
+        where: i.user_id == ^id,
+        order_by: [desc: :inserted_at],
+        preload: [bids: [:item, :user]]
+      )
+
+    @repo.all(query)
+  end
+
   @doc """
   takes in a map as attrs
   will return {:ok, struct} or {:error, changeset}
+  pass user_id to this from controller!
   """
-  def insert_item(attrs) do
-    %Item{}
+  def insert_item(attrs, %User{id: user_id}) do
+    %Item{user_id: user_id}
     |> Item.changeset(attrs)
     |> @repo.insert()
   end

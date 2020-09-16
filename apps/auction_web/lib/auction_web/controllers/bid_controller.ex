@@ -18,13 +18,14 @@ defmodule AuctionWeb.BidController do
 
     # DateTime.compare check if first date is greater(:gt), less than (:lt) or equal (:eq) to second date
     case DateTime.compare(item.ends_at, DateTime.utc_now()) do
+      # item expired
       result when result in [:lt, :eq] ->
         conn
         |> put_flash(:error, "Bidding on that item has expired!")
         |> redirect(to: Routes.item_path(conn, :show, item_id))
 
       _ ->
-        # item still going
+        # item still active
         case Auction.insert_bid(%{amount: amount, user_id: user_id, item_id: item_id}) do
           {:ok, bid} ->
             html =
@@ -42,7 +43,13 @@ defmodule AuctionWeb.BidController do
             IO.puts("BACK IN CONT----------")
             IO.inspect(bid)
             item = Auction.get_item_with_bids(item_id)
-            render(conn, AuctionWeb.ItemView, "show.html", item: item, bid: bid)
+            owner = Auction.get_user(item.user_id)
+
+            render(conn, AuctionWeb.ItemView, "show.html",
+              item: item,
+              bid: bid,
+              owner: owner.username
+            )
         end
     end
   end

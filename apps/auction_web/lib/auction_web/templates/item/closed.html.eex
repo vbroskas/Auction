@@ -1,5 +1,5 @@
+<h2>Closed Auctions </h2>
 
-<h2>Active Auction Items</h2>
 <ul>
 <%= for item <- @items do %>
 <li>

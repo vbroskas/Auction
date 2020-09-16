@@ -14,6 +14,12 @@ defmodule AuctionWeb.GlobalHelpers do
   end
 
   def check_ends_at(ends_at) do
-    ends_at > DateTime.now("Etc/UTC")
+    case DateTime.compare(ends_at, DateTime.utc_now()) do
+      result when result in [:lt, :eq] ->
+        true
+
+      _ ->
+        false
+    end
   end
 end
